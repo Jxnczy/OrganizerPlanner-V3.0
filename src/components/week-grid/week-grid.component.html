@@ -1,0 +1,76 @@
+<!-- Main Content: Weekly Planner -->
+<main class="flex flex-col flex-grow relative z-10">
+  <!-- Top Decoration -->
+  <div class="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-indigo-900/10 to-transparent pointer-events-none"></div>
+
+  <!-- Week Navigation -->
+  <header class="flex items-center justify-between px-8 py-6 flex-shrink-0 relative z-20">
+    <button (click)="taskService.navigateWeek(-1)" class="flex items-center gap-2 px-4 py-2 rounded-full bg-planner-surface hover:bg-planner-card border border-white/5 hover:border-white/10 transition-all text-sm font-semibold text-planner-text-dim hover:text-white group">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+      LAST WEEK
+    </button>
+    
+    <div class="flex flex-col items-center">
+      <h2 class="text-3xl font-bold tracking-tight text-white">
+        Week {{ taskService.currentWeekKey().split('-W')[1] }}
+      </h2>
+      <div class="flex items-center gap-2 mt-1">
+        <span class="text-base font-medium text-planner-text-dim">{{ taskService.weekDateRange() }}</span>
+      </div>
+    </div>
+    
+    <button (click)="taskService.navigateWeek(1)" class="flex items-center gap-2 px-4 py-2 rounded-full bg-planner-surface hover:bg-planner-card border border-white/5 hover:border-white/10 transition-all text-sm font-semibold text-planner-text-dim hover:text-white group">
+      NEXT WEEK
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+    </button>
+  </header>
+
+  <!-- Calendar Grid (Scrolling Container) -->
+  <div class="flex-grow min-h-0 overflow-auto custom-scrollbar pb-6 relative">
+    <div class="flex min-w-full">
+      
+      <!-- Sticky Legend Column (Row Headers) -->
+      <div class="sticky left-0 z-40 bg-planner-bg pt-[7.5rem] flex flex-col pb-6 border-r border-white/5 shadow-xl">
+         
+         <!-- Goal (1 slot) Height: 2.75rem pad + 3.5rem = 6.25rem -->
+         <div class="h-[6.25rem] mb-1 w-7 flex items-center justify-center relative">
+            <div id="goal-bar" class="absolute right-0 w-1 bg-legend-goal rounded-full"></div>
+            <span class="text-[10px] font-bold text-cat-asap tracking-widest -rotate-90 whitespace-nowrap">GOAL</span>
+         </div>
+
+         <!-- Focus (3 slots) Height: 2.75 + 10.5 + 1 = 14.25rem -->
+         <div class="h-[14.25rem] mb-1 w-7 flex items-center justify-center relative">
+            <div id="focus-bar" class="absolute right-0 w-1 bg-legend-focus rounded-full"></div>
+            <span class="text-[10px] font-bold text-cat-soon tracking-widest -rotate-90 whitespace-nowrap">FOCUS</span>
+         </div>
+
+         <!-- Work (3 slots) Height: 14.25rem -->
+         <div class="h-[14.25rem] mb-1 w-7 flex items-center justify-center relative">
+            <div id="work-bar" class="absolute right-0 w-1 bg-legend-work rounded-full"></div>
+            <span class="text-[10px] font-bold text-cat-pending tracking-widest -rotate-90 whitespace-nowrap">WORK</span>
+         </div>
+
+         <!-- Leisure (2 slots) Height: 2.75 + 7 + 0.5 = 10.25rem -->
+         <div class="h-[10.25rem] mb-1 w-7 flex items-center justify-center relative">
+             <div id="leisure-bar" class="absolute right-0 w-1 bg-legend-leisure rounded-full"></div>
+             <span class="text-[10px] font-bold text-cat-leisure tracking-widest -rotate-90 whitespace-nowrap">LEISURE</span>
+         </div>
+
+         <!-- Chores (4 slots) Height: 2.75 + 14 + 1.5 = 18.25rem -->
+         <div class="h-[18.25rem] w-7 flex items-center justify-center relative">
+             <div id="chores-bar" class="absolute right-0 w-1 bg-legend-chores rounded-full"></div>
+             <span class="text-[10px] font-bold text-cat-basics tracking-widest -rotate-90 whitespace-nowrap">CHORES</span>
+         </div>
+      </div>
+
+      <!-- Days Columns -->
+      <div class="grid grid-flow-col auto-cols-[minmax(17rem,1fr)] gap-x-4 flex-grow h-full px-4">
+        @for (day of taskService.daysOfWeek; track day; let i = $index) {
+          <div class="h-full">
+              <app-day-column [day]="day" [dayIndex]="i"></app-day-column>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</main>

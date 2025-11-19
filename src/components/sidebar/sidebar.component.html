@@ -1,0 +1,191 @@
+<!-- Left Sidebar: Brain Dump & Task Pool -->
+<aside style="width: clamp(18rem, 22vw, 24rem);" class="h-full flex-shrink-0 flex flex-col glass-panel z-20 bg-planner-surface/50 border-r border-white/5">
+  <!-- Non-scrolling container -->
+  <div class="flex-shrink-0">
+    <!-- Header -->
+    <header class="flex items-center justify-between p-5 pb-2">
+      <div>
+        <h1 class="text-xl font-bold tracking-wide text-white">Planner</h1>
+        <p class="text-xs text-planner-text-dim font-medium tracking-wider mt-0.5">ORGANIZE YOUR LIFE</p>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <!-- Theme Switcher -->
+        <div class="relative">
+           <button (click)="isThemeMenuOpen.set(!isThemeMenuOpen())" class="p-1.5 rounded-lg hover:bg-white/5 transition-colors text-planner-text-dim hover:text-white" aria-label="Change Theme">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
+           </button>
+           @if (isThemeMenuOpen()) {
+              <div class="absolute top-full right-0 mt-2 w-40 z-50 flex flex-col gap-1 p-1 bg-planner-card border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-pop-in">
+                 <button (click)="themeService.setTheme('dark')" class="text-left px-4 py-2.5 text-sm rounded-lg transition-colors" [class.bg-white/10]="themeService.theme() === 'dark'" [class.hover:bg-white/5]="themeService.theme() !== 'dark'">DARK MODE</button>
+                 <button (click)="themeService.setTheme('blue')" class="text-left px-4 py-2.5 text-sm rounded-lg transition-colors" [class.bg-white/10]="themeService.theme() === 'blue'" [class.hover:bg-white/5]="themeService.theme() !== 'blue'">BLUE MODE</button>
+                 <button (click)="themeService.setTheme('classic')" class="text-left px-4 py-2.5 text-sm rounded-lg transition-colors" [class.bg-white/10]="themeService.theme() === 'classic'" [class.hover:bg-white/5]="themeService.theme() !== 'classic'">CLASSIC MODE</button>
+              </div>
+           }
+        </div>
+        
+        <!-- Settings -->
+        <div class="relative">
+          <button (click)="isDataConfigOpen.set(!isDataConfigOpen())" class="p-1.5 rounded-lg hover:bg-white/5 transition-colors text-planner-text-dim hover:text-white" aria-label="Settings">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066 2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+          </button>
+          @if (isDataConfigOpen()) {
+            <div class="absolute top-full right-0 mt-2 w-56 z-50 flex flex-col gap-1 p-1 bg-planner-card border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-pop-in">
+              <button (click)="taskService.exportData()" class="text-left px-4 py-2.5 text-sm text-planner-text hover:bg-white/5 rounded-lg transition-colors">Export JSON</button>
+              <div class="relative">
+                 <input type="file" id="import-file" (change)="handleImport($event)" class="hidden" accept=".json">
+                 <label for="import-file" class="block cursor-pointer text-left px-4 py-2.5 text-sm text-planner-text hover:bg-white/5 rounded-lg transition-colors">Import JSON</label>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+    
+    <!-- New Task Input -->
+    <div class="px-5 py-3">
+      <form (submit)="$event.preventDefault(); addTodo()" class="flex flex-col gap-3">
+        <div class="flex items-center w-full bg-white/5 rounded-lg focus-within:bg-white/10 focus-within:ring-1 transition-all duration-300 shadow-sm focus-within:ring-indigo-500 pr-3">
+            <input type="text" name="newTodoText" [(ngModel)]="newTodoText" placeholder="Add task..." 
+                   class="flex-grow bg-transparent rounded-lg px-3 py-2 text-[14px] focus:outline-none placeholder-white/20"
+                   />
+            <div class="flex-shrink-0 text-xs text-planner-text-dim flex items-center gap-1">
+              <input type="number" name="taskDuration" min="1" max="999" [(ngModel)]="taskDuration" class="bg-transparent w-10 text-right focus:outline-none" title="Duration">
+              <span>m</span>
+            </div>
+        </div>
+        
+        <button type="submit" [disabled]="!newTodoText().trim()" class="w-full bg-white/5 hover:bg-white/10 text-white font-medium py-2 px-3 rounded-lg transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group border border-white/5">
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" /></svg>
+           Add Task
+        </button>
+      </form>
+    </div>
+
+    <!-- Task Pool Header -->
+    <header class="px-5 pt-2 pb-2 flex items-center justify-between">
+      <button class="flex items-center gap-2 group" (click)="isBacklogCollapsed.set(!isBacklogCollapsed())">
+         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-planner-text-dim transition-transform duration-200" [class.rotate-90]="!isBacklogCollapsed()">
+           <path d="M10 18l6-6-6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+         </svg>
+        <h2 class="text-lg font-bold text-white tracking-tight">Backlog</h2>
+        @if (isBacklogCollapsed() && taskService.backlogPool().length > 1) {
+          <span class="text-xs text-planner-text-dim font-mono group-hover:text-white transition-colors">
+              + {{ taskService.backlogPool().length - 1 }} hidden
+          </span>
+        }
+      </button>
+
+      <div class="flex items-center gap-2 text-[11px] text-planner-text-dim font-medium">
+        <span>{{ taskService.saveStatus() }}</span>
+        <div class="w-2 h-2 rounded-full transition-colors"
+          [class.bg-emerald-500]="taskService.saveStatus() === 'All changes saved'"
+          [class.bg-amber-500]="taskService.saveStatus() === 'Saving...'"
+          [class.animate-pulse]="taskService.saveStatus() === 'Saving...'">
+        </div>
+      </div>
+    </header>
+  </div>
+  
+  <!-- Task Pool Scrollable Area -->
+  <div class="flex-grow min-h-0 overflow-y-auto custom-scrollbar px-5 pb-6" (dragover)="$event.preventDefault()" (drop)="taskService.onPoolDrop()" (dragenter)="taskService.onDragEnter({ type: 'pool' })">
+    <div class="space-y-5" [class.bg-white/5]="isPoolDropTarget()" [class.rounded-xl]="isPoolDropTarget()" [class.p-2]="isPoolDropTarget()" [class.-m-2]="isPoolDropTarget()">
+      
+      <!-- Uncategorized Backlog -->
+      @if(taskService.backlogPool().length > 0) {
+        <div class="space-y-2">
+          @for (todo of taskService.backlogPool(); track todo.id; let i = $index) {
+            @if (!isBacklogCollapsed() || i === 0) {
+              <div 
+                class="relative group bg-planner-card rounded-md p-3 shadow-sm border border-transparent hover:border-planner-border cursor-move transition-all duration-200 hover:-translate-y-[2px] hover:shadow-md mt-2"
+                [class.opacity-40]="isPoolTaskBeingDragged(todo)"
+                [draggable]="taskService.editingTaskId() !== todo.id" 
+                (dragstart)="taskService.editingTaskId() !== todo.id && onPoolDragStart($event, todo)" 
+                (dblclick)="taskService.editingTaskId() !== todo.id && taskService.startEdit(todo)"
+                role="button" tabindex="0">
+                
+                @if(taskService.editingTaskId() === todo.id) { 
+                  <div class="flex items-center gap-2">
+                      <input type="text" [(ngModel)]="taskService.editingTaskText" (keydown.enter)="taskService.saveEdit()" (keydown.escape)="taskService.cancelEdit()" class="flex-grow bg-planner-bg rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-white/20" autoFocus>
+                      <input type="number" [(ngModel)]="taskService.editingTaskDuration" (keydown.enter)="taskService.saveEdit()" (keydown.escape)="taskService.cancelEdit()" class="w-10 bg-planner-bg rounded px-1 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-white/20">
+                      <button (click)="taskService.saveEdit()" class="text-emerald-400 hover:text-emerald-300"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></button>
+                  </div>
+                } @else {
+                  <!-- Duration Badge -->
+                  <div class="absolute top-2 right-3 text-xs font-mono text-planner-text-dim">{{ todo.duration }}m</div>
+                  
+                  <div class="pr-10">
+                    <span class="text-[14px] text-planner-text font-medium leading-snug truncate">{{ todo.text }}</span>
+                  </div>
+                }
+              </div>
+            }
+          }
+        </div>
+      }
+    
+      @if(taskService.todoPool().length === 0) {
+        <div class="flex flex-col items-center justify-center h-40 text-planner-text-dim opacity-50">
+          <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+          <p class="text-sm">All tasks scheduled!</p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Fixed Bottom Area for Recurring Chores -->
+  @if(taskService.basicsPool().length > 0) {
+    <div class="flex-shrink-0 px-5 pt-3 pb-4 border-t border-white/5">
+        <!-- Chore list container with overflow hidden for animation -->
+        <div class="transition-all duration-300 ease-in-out overflow-hidden" 
+             [class.max-h-0]="isChoresCollapsed()" 
+             [class.max-h-80]="!isChoresCollapsed()">
+             
+             <!-- The actual list, with its own scrollbar if it gets too long -->
+             <div class="space-y-2 mb-3 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+                @for (todo of taskService.basicsPool(); track todo.id) {
+                  <div 
+                    class="relative group bg-planner-card rounded-md p-3 shadow-sm border border-transparent hover:border-planner-border cursor-move transition-all duration-200 hover:-translate-y-[2px] hover:shadow-md mt-2"
+                    [class.opacity-40]="isPoolTaskBeingDragged(todo)"
+                    [draggable]="taskService.editingTaskId() !== todo.id" 
+                    (dragstart)="taskService.editingTaskId() !== todo.id && onPoolDragStart($event, todo)" 
+                    (dblclick)="taskService.editingTaskId() !== todo.id && taskService.startEdit(todo)"
+                    role="button" tabindex="0">
+                    
+                    <!-- Left Color Strip -->
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-cat-basics"></div>
+
+                    @if(taskService.editingTaskId() === todo.id) { 
+                      <div class="flex items-center gap-2 pl-2">
+                         <input type="text" [(ngModel)]="taskService.editingTaskText" (keydown.enter)="taskService.saveEdit()" (keydown.escape)="taskService.cancelEdit()" class="flex-grow bg-planner-bg rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-white/20" autoFocus>
+                         <input type="number" [(ngModel)]="taskService.editingTaskDuration" (keydown.enter)="taskService.saveEdit()" (keydown.escape)="taskService.cancelEdit()" class="w-10 bg-planner-bg rounded px-1 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-white/20">
+                         <button (click)="taskService.saveEdit()" class="text-emerald-400 hover:text-emerald-300"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></button>
+                      </div>
+                    } @else {
+                      <!-- Duration Badge -->
+                      <div class="absolute top-2 right-3 text-xs font-mono text-planner-text-dim">{{ todo.duration }}m</div>
+                      
+                      <div class="pl-2 pr-10">
+                        <span class="text-[14px] text-planner-text font-medium leading-snug truncate">{{ todo.text }}</span>
+                      </div>
+                    }
+                  </div>
+                }
+             </div>
+        </div>
+
+        <!-- Header/Toggler -->
+        <button class="flex items-center gap-2 group w-full text-left" (click)="isChoresCollapsed.set(!isChoresCollapsed())">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-planner-text-dim transition-transform duration-300" [class.rotate-180]="!isChoresCollapsed()">
+            <path d="m19 9-7 7-7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h2 class="text-lg font-bold text-white tracking-tight">RECURRING CHORES</h2>
+           @if (isChoresCollapsed() && taskService.basicsPool().length > 0) {
+            <span class="text-xs text-planner-text-dim font-mono group-hover:text-white transition-colors">
+                + {{ taskService.basicsPool().length }} hidden
+            </span>
+          }
+        </button>
+    </div>
+  }
+</aside>

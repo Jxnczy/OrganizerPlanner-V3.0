@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Weekly Planner & To-Do List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="index.css">
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+          mono: ['monospace'],
+        },
+        extend: {
+          fontSize: {
+            'sm': '1.4rem',
+            'base': '1.5rem',
+            '3xl': '2.875rem',
+          },
+          colors: {
+            'planner-bg': 'var(--color-bg)',
+            'planner-surface': 'var(--color-surface)',
+            'planner-card': 'var(--color-card)',
+            'planner-border': 'var(--color-border)',
+            'planner-text': 'var(--color-text)',
+            'planner-text-dim': 'var(--color-text-dim)',
+            'planner-today-indicator': 'var(--color-today-indicator)',
+            'planner-today-bg': 'var(--color-today-bg)',
+            'done-green': 'var(--color-done-green)',
+            
+            /* Themeable Category Colors */
+            'cat-asap': 'var(--color-cat-asap)',
+            'cat-soon': 'var(--color-cat-soon)',
+            'cat-pending': 'var(--color-cat-pending)',
+            'cat-leisure': 'var(--color-cat-leisure)',
+            'cat-basics': 'var(--color-cat-basics)',
+
+            /* New Legend Colors */
+            'legend-goal': 'var(--color-legend-goal)',
+            'legend-focus': 'var(--color-legend-focus)',
+            'legend-work': 'var(--color-legend-work)',
+            'legend-leisure': 'var(--color-legend-leisure)',
+            'legend-chores': 'var(--color-legend-chores)',
+          }
+        }
+      }
+    }
+  </script>
+<style>
+  /* Base variables for the blue theme (slate) */
+  :root, .theme-blue {
+    --color-bg: #0F172A; /* Weekly Background */
+    --color-surface: #192436; /* Sidebar Background */
+    --color-card: #334155; /* Task Card Background */
+    --color-border: #475569; /* Slate 600 */
+    --color-text: #f1f5f9; /* Slate 100 */
+    --color-text-dim: #94a3b8; /* Slate 400 */
+    --glass-panel-bg: rgba(25, 36, 54, 0.85); /* Derived from --color-surface */
+    --scrollbar-thumb: #334155;
+    --scrollbar-thumb-hover: #475569;
+    --color-today-indicator: #00cbff7a;
+    --color-today-bg: #293a5552;
+    --color-done-green: #22c55e;
+
+    --color-cat-asap: #f43f5e; /* Rose 500 */
+    --color-cat-soon: #fb923c; /* Orange 400 */
+    --color-cat-pending: #facc15; /* Yellow 400 */
+    --color-cat-leisure: #38bdf8; /* Sky 400 */
+    --color-cat-basics: #cccccc; /* Neutral Gray */
+
+    /* New Legend-Specific Colors */
+    --color-legend-goal: var(--color-cat-asap);
+    --color-legend-focus: var(--color-cat-soon);
+    --color-legend-work: var(--color-cat-pending);
+    --color-legend-leisure: var(--color-cat-leisure);
+    --color-legend-chores: var(--color-cat-basics);
+
+    --ghost-slot-border: #475569; /* Slate 600 - Increased contrast */
+    --ghost-slot-border-hover: #555555;
+    --ghost-slot-icon: #666666;
+  }
+  
+  /* Variables for the original dark theme (zinc) */
+  .theme-dark {
+    --color-bg: #09090b; /* Zinc 950 */
+    --color-surface: #18181b; /* Zinc 900 */
+    --color-card: #27272a; /* Zinc 800 */
+    --color-border: #52525b; /* Zinc 600 - Increased contrast */
+    --color-text: #f4f4f5; /* Zinc 100 */
+    --color-text-dim: #a1a1aa; /* Zinc 400 */
+    --glass-panel-bg: rgba(24, 24, 27, 0.85);
+    --scrollbar-thumb: #3f3f46;
+    --scrollbar-thumb-hover: #52525b;
+    --color-today-indicator: #b5b5b5;
+    --color-today-bg: #47474745;
+    --color-done-green: #22c55e;
+
+    --color-cat-asap: #f43f5e;
+    --color-cat-soon: #fb923c;
+    --color-cat-pending: #facc15;
+    --color-cat-leisure: #38bdf8;
+    --color-cat-basics: #cccccc;
+
+    /* New Legend-Specific Colors */
+    --color-legend-goal: var(--color-cat-asap);
+    --color-legend-focus: var(--color-cat-soon);
+    --color-legend-work: var(--color-cat-pending);
+    --color-legend-leisure: var(--color-cat-leisure);
+    --color-legend-chores: var(--color-cat-basics);
+
+    --ghost-slot-border: #3f3f46; /* Zinc 700 - Increased contrast */
+    --ghost-slot-border-hover: #555555;
+    --ghost-slot-icon: #666666;
+  }
+
+  /* New variables for the classic theme (from screenshot) */
+  .theme-classic {
+    --color-bg: #1E1E1E;
+    --color-surface: #2D2D2D; /* For active day column */
+    --color-card: #3C3C3C;
+    --color-border: #4a4a4a; /* Increased contrast */
+    --color-text: #E0E0E0;
+    --color-text-dim: #888888;
+    --glass-panel-bg: rgba(30, 30, 30, 0.85);
+    --scrollbar-thumb: #3C3C3C;
+    --scrollbar-thumb-hover: #555555;
+    --color-today-indicator: #69696957;
+    --color-today-bg: #8f8f8f1a;
+    --color-done-green: #22c55e;
+
+    --color-cat-asap: #ef4444; /* Red */
+    --color-cat-soon: #f97316; /* Orange */
+    --color-cat-pending: #eab308; /* Yellow */
+    --color-cat-leisure: #38bdf8; /* Blue */
+    --color-cat-basics: #cccccc; /* Gray */
+
+    /* New Legend-Specific Colors */
+    --color-legend-goal: var(--color-cat-asap);
+    --color-legend-focus: var(--color-cat-soon);
+    --color-legend-work: var(--color-cat-pending);
+    --color-legend-leisure: var(--color-cat-leisure);
+    --color-legend-chores: var(--color-cat-basics);
+
+    --ghost-slot-border: rgba(255, 255, 255, 0.25); /* Increased contrast */
+    --ghost-slot-border-hover: rgba(255, 255, 255, 0.4);
+    --ghost-slot-icon: #888888;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-size: 15px; /* Increased base size */
+    line-height: 1.5;
+  }
+  
+  @keyframes pop-in {
+    0% { transform: scale(0.95); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  .animate-pop-in {
+    animation: pop-in 0.2s ease-out forwards;
+  }
+
+  /* Custom Scrollbar - Cross-browser */
+  .custom-scrollbar {
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: var(--scrollbar-thumb) transparent; /* For Firefox */
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 20px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
+
+  /* Glass Effect helper */
+  .glass-panel {
+    background: var(--glass-panel-bg);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(255,255,255,0.05);
+  }
+  
+  /* Task Completion Animations */
+  @keyframes card-complete-animation {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 transparent;
+    }
+    30% {
+        transform: scale(1.04);
+        box-shadow: 0 0 16px 4px rgba(34, 197, 94, 0.4);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 transparent;
+    }
+  }
+
+  .animate-card-complete {
+    animation: card-complete-animation 0.4s ease-out;
+  }
+
+  /* Font Size Overrides */
+  .text-\[10px\] {
+    font-size: 14px !important;
+  }
+  .text-\[14px\] {
+    font-size: 1.1rem !important;
+  }
+  .text-xs {
+    font-size: 1.25rem !important;
+  }
+
+  /* Targeted fix for category selector buttons */
+  .category-pill {
+    font-size: 10px !important;
+  }
+  
+  #goal-bar,
+  #focus-bar,
+  #work-bar,
+  #leisure-bar,
+  #chores-bar {
+    height: 85%;
+  }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "rxjs": "https://aistudiocdn.com/rxjs@^7.8.2?conditions=es2015",
+    "rxjs/operators": "https://aistudiocdn.com/rxjs@^7.8.2/operators?conditions=es2015",
+    "rxjs/ajax": "https://aistudiocdn.com/rxjs@^7.8.2/ajax?conditions=es2015",
+    "rxjs/webSocket": "https://aistudiocdn.com/rxjs@^7.8.2/webSocket?conditions=es2015",
+    "rxjs/testing": "https://aistudiocdn.com/rxjs@^7.8.2/testing?conditions=es2015",
+    "rxjs/fetch": "https://aistudiocdn.com/rxjs@^7.8.2/fetch?conditions=es2015",
+    "@angular/forms": "https://next.esm.sh/@angular/forms@^20.3.12?external=rxjs",
+    "@angular/core": "https://next.esm.sh/@angular/core@^20.3.12?external=rxjs",
+    "@angular/platform-browser": "https://next.esm.sh/@angular/platform-browser@^20.3.12?external=rxjs",
+    "@angular/common": "https://next.esm.sh/@angular/common@^20.3.12?external=rxjs",
+    "@angular/compiler": "https://next.esm.sh/@angular/compiler@^20.3.12?external=rxjs",
+    "@google/genai": "https://esm.sh/@google/genai"
+  }
+}
+</script>
+</head>
+<body class="bg-planner-bg text-planner-text overflow-hidden selection:bg-white/10">
+  <app-root></app-root>
+  <script type="module" src="index.js"></script>
+</body>
+</html>
